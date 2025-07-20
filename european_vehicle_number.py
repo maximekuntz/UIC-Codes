@@ -1,3 +1,6 @@
+from vehicles_details import TRACTIVE_VEHICLE_TYPE
+
+
 def clean_number(european_vehicle_number: str) -> str:
     """Cleans the European vehicle number by removing any non-digit characters."""
     return "".join(filter(str.isdigit, european_vehicle_number))
@@ -20,6 +23,28 @@ def get_vehicle_type(european_vehicle_number: str) -> int:
     return vehicle_type_code
 
 
+def get_tractive_vehicle_type(vehicle_type_code: int) -> str:
+    """
+    Returns the description of the tractive vehicle type based on the vehicle type code.
+
+    Args:
+        vehicle_type_code (int): The vehicle type code.
+
+    Returns:
+        str: The description of the tractive vehicle type.
+    """
+    if len(str(vehicle_type_code)) > 2:
+        raise ValueError("Vehicle type code must be 2 digits long.")
+    elif len(str(vehicle_type_code)) == 2:
+        if vehicle_type_code // 10 != 9:
+            raise ValueError(
+                f"Vehicle type code should be between 90 and 99, but is not: {vehicle_type_code}."
+            )
+        else:
+            vehicle_type_code = vehicle_type_code % 10
+    return TRACTIVE_VEHICLE_TYPE.get(vehicle_type_code, "Unknown")
+
+
 def get_country_code(european_vehicle_number: str) -> int:
     """
     Returns the country code based on the first two characters of the European vehicle number.
@@ -35,6 +60,67 @@ def get_country_code(european_vehicle_number: str) -> int:
     country_code = int(european_vehicle_number[2:4])
     print(f"Country code: {country_code}")
     return country_code
+
+
+def get_national_number(european_vehicle_number: str) -> str:
+    """
+    Returns the national number based on the characters after the first two of the European vehicle number.
+
+    Args:
+        european_vehicle_number (str): The vehicle number.
+
+    Returns:
+        str: The national number.
+    """
+    european_vehicle_number = clean_number(european_vehicle_number)
+    print(f"Cleaned vehicle number: {european_vehicle_number}")
+    national_number = european_vehicle_number[4:11]
+    print(f"National number: {national_number}")
+    return national_number
+
+
+def get_rolling_stock_group(european_vehicle_number: str) -> str:
+    """
+    Returns the rolling stock group based on the first character of the European vehicle number.
+
+    Args:
+        european_vehicle_number (str): The vehicle number.
+
+    Returns:
+        str: The rolling stock group.
+    """
+    european_vehicle_number = clean_number(european_vehicle_number)
+    print(f"Cleaned vehicle number: {european_vehicle_number}")
+    vehicle_type = get_vehicle_type(european_vehicle_number)
+    if vehicle_type < 50 or 80 <= vehicle_type <= 89:
+        rolling_stock_group = "Wagons"
+    elif 50 <= vehicle_type <= 79:
+        rolling_stock_group = "Hauled passenger vehicles"
+    else:
+        national_number = get_national_number(european_vehicle_number)
+        if national_number.startswith("9"):
+            rolling_stock_group = "Special vehicles"
+        else:
+            rolling_stock_group = "Tractive rolling stock and units in a trainset in fixed or pre-defined formation"
+    print(f"Rolling stock group code: {rolling_stock_group}")
+    return rolling_stock_group
+
+
+def get_serial_number(european_vehicle_number: str) -> str:
+    """
+    Returns the serial number based on the last three characters of the European vehicle number.
+
+    Args:
+        european_vehicle_number (str): The vehicle number.
+
+    Returns:
+        str: The serial number.
+    """
+    european_vehicle_number = clean_number(european_vehicle_number)
+    print(f"Cleaned vehicle number: {european_vehicle_number}")
+    serial_number = european_vehicle_number[8:11]
+    print(f"Serial number: {serial_number}")
+    return serial_number
 
 
 def get_check_digit(european_vehicle_number: str) -> int:

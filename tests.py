@@ -5,6 +5,10 @@ from european_vehicle_number import (
     clean_number,
     get_vehicle_type,
     get_country_code,
+    get_national_number,
+    get_serial_number,
+    get_rolling_stock_group,
+    get_tractive_vehicle_type,
     get_check_digit,
     validate_vehicle_number,
 )
@@ -58,3 +62,30 @@ def tets_validate_vehicle_number():
     assert validate_vehicle_number("338447961008") is True
     assert validate_vehicle_number("315133201980") is True
     assert validate_vehicle_number("338447961002") is False  # Incorrect check digit
+
+
+def test_get_national_number():
+    assert get_national_number("338447961008") == "4796100"
+    assert get_national_number("31-51-3320-198") == "3320198"
+
+
+def test_get_serial_number():
+    assert get_serial_number("338447961008") == "100"
+    assert get_serial_number("31-51-3320-198") == "198"
+
+
+def test_get_rolling_stock_group():
+    assert (
+        get_rolling_stock_group("93-84-8999999")
+        == "Tractive rolling stock and units in a trainset in fixed or pre-defined formation"
+    )
+    assert get_rolling_stock_group("51-51-3320-198") == "Hauled passenger vehicles"
+
+
+def test_get_tractive_vehicle_type():
+    assert get_tractive_vehicle_type(0) == "Miscellaneous"
+    assert get_tractive_vehicle_type(90) == "Miscellaneous"
+    with pytest.raises(ValueError):
+        get_tractive_vehicle_type(81)
+    with pytest.raises(ValueError):
+        get_tractive_vehicle_type(100)
