@@ -1,10 +1,11 @@
 import pytest
 
-from european_vehicle_number import (
+from uic_codes.european_vehicle_number import (
     compute_check_digit,
     clean_number,
     get_vehicle_type,
     get_country_code,
+    get_country_name,
     get_national_number,
     get_serial_number,
     get_rolling_stock_group,
@@ -17,7 +18,7 @@ from european_vehicle_number import (
 def test_clean_number():
     assert clean_number("33844796100") == "33844796100"
     assert clean_number("33-84-4796-100-8") == "338447961008"
-    assert clean_number("3384479610A") == "3384479610"
+    assert clean_number("33874796100 SNCF-F") == "33874796100"
     assert clean_number("NL 33 84 4796 100") == "33844796100"
     assert clean_number("33844796100 ") == "33844796100"
 
@@ -62,6 +63,12 @@ def tets_validate_vehicle_number():
     assert validate_vehicle_number("338447961008") is True
     assert validate_vehicle_number("315133201980") is True
     assert validate_vehicle_number("338447961002") is False  # Incorrect check digit
+
+
+def test_get_country_name():
+    assert get_country_name(87) == "France"
+    assert get_country_name("87") == "France"
+    assert get_country_name(99) is None  # Unknown country code
 
 
 def test_get_national_number():

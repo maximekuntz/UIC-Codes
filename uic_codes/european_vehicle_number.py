@@ -1,5 +1,6 @@
-from logger import logger
-from vehicles_details import TRACTIVE_VEHICLE_TYPE
+from uic_codes.logger import logger
+from uic_codes.countries import COUNTRIES_CODES
+from uic_codes.vehicles_details import TRACTIVE_VEHICLE_TYPE
 
 
 def clean_number(european_vehicle_number: str) -> str:
@@ -61,6 +62,23 @@ def get_country_code(european_vehicle_number: str) -> int:
     country_code = int(european_vehicle_number[2:4])
     logger.debug(f"Country code: {country_code}")
     return country_code
+
+
+def get_country_name(country_code: int | str) -> str | None:
+    """
+    Returns the country name based on the country code from the European vehicle number.
+
+    Args:
+        european_vehicle_number (str): The vehicle number.
+
+    Returns:
+        str: The name of the country.
+    """
+    if isinstance(country_code, str):
+        country_code = int(country_code)
+    country_name = COUNTRIES_CODES.get(country_code)
+    logger.info(f"Country name: {country_name}")
+    return country_name
 
 
 def get_national_number(european_vehicle_number: str) -> str:
@@ -196,3 +214,12 @@ def validate_vehicle_number(european_vehicle_number: str) -> bool:
     check_digit = get_check_digit(european_vehicle_number)
     computed_check_digit = compute_check_digit(european_vehicle_number[:-1])
     return check_digit == computed_check_digit
+
+
+if __name__ == "__main__":
+    evn = compute_check_digit("93 87 0 029 141")
+    print(evn)
+    print(compute_check_digit("93 87 03 103 59"))
+    print(validate_vehicle_number("93 87 03 103 599"))
+    print(validate_vehicle_number("93 87 0310 360 7"))
+    print(compute_check_digit("93 87 3 108 806"))
